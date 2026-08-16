@@ -14,9 +14,9 @@ behind every decision.
 4. Compares each gap against that endpoint's own rolling baseline speed.
 5. If degradation looks severe (or the connection dies outright), hands off
    to a Decision Engine that picks one of three outcomes:
-   - **SWITCH** — abandon this endpoint, restart the query on a healthy
+   - **SWITCH**  abandon this endpoint, restart the query on a healthy
      backup, carrying forward the text already generated
-   - **WAIT** — grant one grace period rather than throw away work that's
+   - **WAIT**  grant one grace period rather than throw away work that's
      nearly finished
    - **ACCEPT_PARTIAL** stop and return what's been generated so far,
      honestly flagged as incomplete, when switching would cost more than
