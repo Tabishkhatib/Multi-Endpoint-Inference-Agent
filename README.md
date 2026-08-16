@@ -2,7 +2,7 @@
 
 An agent that routes queries across three local Ollama endpoints, detects
 degradation or failure **mid-stream**, and decides in real time whether to
-switch endpoints, wait, or accept partial output — logging the reasoning
+switch endpoints, wait, or accept partial output  logging the reasoning
 behind every decision.
 
 ## What it does
@@ -18,7 +18,7 @@ behind every decision.
      backup, carrying forward the text already generated
    - **WAIT** — grant one grace period rather than throw away work that's
      nearly finished
-   - **ACCEPT_PARTIAL** — stop and return what's been generated so far,
+   - **ACCEPT_PARTIAL** stop and return what's been generated so far,
      honestly flagged as incomplete, when switching would cost more than
      it recovers
 6. Every endpoint's performance is persisted between runs, so the agent's
@@ -30,7 +30,7 @@ behind every decision.
 |---|---|
 | `ollama_client.py` | Streams tokens from one endpoint, timestamps each one, distinguishes a real dead connection from a slow one |
 | `endpoint_stats.py` | Tracks each endpoint's rolling baseline speed and success rate; handles the calibration-to-baseline transition |
-| `classifier.py` | Keyword-based query categorization (code / reasoning / simple) — used as the automatic fallback |
+| `classifier.py` | Keyword-based query categorization (code / reasoning / simple)  used as the automatic fallback |
 | `semantic_classifier.py` | Primary classifier: real embedding-based semantic similarity (nomic-embed-text), falls back to `classifier.py` if the embedding call fails or times out |
 | `router.py` | Picks the starting endpoint using classification + live health + success rate |
 | `decision_engine.py` | The WAIT / SWITCH / ACCEPT_PARTIAL logic, given a degradation event |
@@ -95,7 +95,7 @@ The primary classifier (`semantic_classifier.py`) embeds the incoming query
 using Ollama's `nomic-embed-text` model and compares it via cosine
 similarity against a handful of example queries per category. This catches
 queries that mean the same thing as an example without sharing its exact
-words — e.g. "there's a bug in my script" correctly classifies as a code
+words  e.g. "there's a bug in my script" correctly classifies as a code
 query even though it shares no literal keywords with terms like "function"
 or "error".
 
@@ -110,7 +110,7 @@ same degrade-gracefully treatment as everything else in this project: a
 short timeout (5s) on real per-query calls, and an automatic fallback to
 the keyword classifier (`classifier.py`) if the embedding call times out
 or errors. The embedding model has a one-time cold-start cost (~15-20s on
-first load) — a `warm_up()` function pays this cost upfront, before serving
+first load)  a `warm_up()` function pays this cost upfront, before serving
 real queries, so it doesn't land on the first real request.
 
 **Degradation detection is calibration-then-baseline.** A fresh endpoint
@@ -118,7 +118,7 @@ has no history to compare against, so the first ~12 tokens use a fixed
 fallback threshold. After that, degradation is judged relative to that
 specific endpoint's own rolling average gap (5–10x baseline = mild,
 20–30x = severe), because different model sizes have genuinely different
-normal speeds — a single global threshold would misjudge smaller/faster
+normal speeds a single global threshold would misjudge smaller/faster
 models as "fine" when they're actually stalling.
 
 **The switch/wait boundary is a 40% progress ratio.** Expected response
@@ -140,13 +140,13 @@ detecting real connection drops and real stalls, not scripted ones.
   biasing the Decision Engine toward WAIT even when the response is still
   fairly short. A better version would learn typical response length per
   category from actual observed data, not a fixed guess.
-- **The classifier can still misclassify some queries** — the embedding
+- **The classifier can still misclassify some queries**  the embedding
   version is more accurate than the keyword fallback, but it's comparing
   against only 5 example queries per category, not a trained model. The
   cost of misclassification is a suboptimal initial routing choice, not a
   failed response.
 - **The embedding model's cold-start cost (~15-20s) has to be paid
-  explicitly via `warm_up()`** before serving real queries — if that step
+  explicitly via `warm_up()`** before serving real queries if that step
   is skipped, the first real query pays that cost instead, which could be
   mistaken for endpoint degradation if it happens mid-demo.
 - **All three Ollama instances share one GPU**, so under real concurrent
@@ -164,7 +164,7 @@ detecting real connection drops and real stalls, not scripted ones.
   fixed hand-written list.
 - Learn expected response length per category from real observed data
   instead of a fixed guess.
-- Test and tune the WAIT path more thoroughly — it's implemented and has
+- Test and tune the WAIT path more thoroughly it's implemented and has
   fired correctly in testing, but deserves more scenario coverage than a
   single grace period.
 - Add concurrent/racing requests to multiple endpoints for latency-critical
