@@ -9,16 +9,16 @@ behind every decision.
 
 1. Classifies an incoming query (code / reasoning / simple).
 2. Routes it to the endpoint best suited for that category, based on that
-   endpoint's live health and historical success rate — not a fixed order.
+   endpoint's live health and historical success rate = not a fixed order.
 3. Streams the response token by token, timing the gap between tokens.
 4. Compares each gap against that endpoint's own rolling baseline speed.
 5. If degradation looks severe (or the connection dies outright), hands off
    to a Decision Engine that picks one of three outcomes:
-   - **SWITCH**  abandon this endpoint, restart the query on a healthy
+   - **SWITCH** = abandon this endpoint, restart the query on a healthy
      backup, carrying forward the text already generated
-   - **WAIT**  grant one grace period rather than throw away work that's
+   - **WAIT** = grant one grace period rather than throw away work that's
      nearly finished
-   - **ACCEPT_PARTIAL** stop and return what's been generated so far,
+   - **ACCEPT_PARTIAL**= stop and return what's been generated so far,
      honestly flagged as incomplete, when switching would cost more than
      it recovers
 6. Every endpoint's performance is persisted between runs, so the agent's
